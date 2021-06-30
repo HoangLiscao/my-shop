@@ -1,0 +1,4 @@
+#Fri Jun 25 15:15:33 ICT 2021
+base.0=/Users/hoangliscao/Documents/flutterProject/shop_app/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
