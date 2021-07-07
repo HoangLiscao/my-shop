@@ -1,6 +1,6 @@
 
 
-  import 'package:shop_app/models/productModel.dart';
+  import 'package:shop_app/providers/productModel.dart';
 
 final PRODUCT_DATA = [
     Product(
