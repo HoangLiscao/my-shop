@@ -29,7 +29,7 @@ final PRODUCT_DATA = [
     Product(
        'p4',
        'A Pan',
-       'Prepare any meal you want.',
+       'Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.Prepare any meal you want.',
        49.99,
       
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
