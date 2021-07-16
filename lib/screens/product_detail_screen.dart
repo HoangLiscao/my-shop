@@ -9,11 +9,7 @@ import 'package:shop_app/providers/products_provider.dart';
     @override
     Widget build(BuildContext context) {
       final routerArgs = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
-
       final productId = routerArgs["id"] as String;
-      final productName = routerArgs["title"] as String;
-      final imageUrl = routerArgs["imageUrl"] as String;
-
       final loadedProduct = Provider.of<ProductsProvider>(context, listen: false ).findProductById(productId);
 
       return Scaffold(
@@ -24,7 +20,7 @@ import 'package:shop_app/providers/products_provider.dart';
               Container (
                 height: 300,
                 width: double.infinity,
-                child: Image.network(imageUrl, fit: BoxFit.cover,),
+                child: Image.network(loadedProduct.imageUrl, fit: BoxFit.cover,),
               ),
               SizedBox(height: 10,),
               Text("\$${loadedProduct.price}", style: TextStyle(color: Colors.grey, fontSize: 20),),

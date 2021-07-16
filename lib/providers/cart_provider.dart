@@ -12,6 +12,14 @@ class CartProvider with ChangeNotifier {
     return _items == null ? 0 : _items.length;
   }
 
+  int get numberItemInCart {
+    var number = 0;
+    _items.forEach((key, element) {
+      number += 1*element.quantity;
+    });
+    return number;
+  }
+
   double get totalAmount {
     var total = 0.0;
     _items.forEach((key, item) {
@@ -31,6 +39,11 @@ class CartProvider with ChangeNotifier {
     } else {
       _items.putIfAbsent(productId, () => CartItem(DateTime.now().toString(), price, 1, title));
     }
+    notifyListeners();
+  }
+
+  void clear() {
+    _items = {};
     notifyListeners();
   }
 }

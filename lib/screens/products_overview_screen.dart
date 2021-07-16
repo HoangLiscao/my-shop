@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart_provider.dart';
 import 'package:shop_app/providers/products_provider.dart';
 import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/widgets/app_drawer_widget.dart';
 import 'package:shop_app/widgets/badge.dart';
 import 'package:shop_app/widgets/product_grid.dart';
 
 enum FilterOptions { Favorites, All }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const routeName = "product_overview_screen";
+
   @override
   _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
 }
@@ -50,7 +53,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ),
             Consumer<CartProvider>(
               builder: (_, cartData, child) => Badge(
-                value: cartData.itemCount.toString(),
+                value: cartData.numberItemInCart.toString(),
                 color: Colors.blue, child: child!,
               ),
               child: IconButton(
@@ -62,6 +65,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             )
           ],
         ),
+        drawer: AppDrawerWidget(),
         body: ProductGrid(_showOnlyFavorites));
   }
 }
