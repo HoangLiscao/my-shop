@@ -1,7 +1,10 @@
 
-  import 'package:flutter/material.dart';
+  import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:shop_app/data/productData.dart';
 import 'package:shop_app/providers/productModel.dart';
+import 'package:http/http.dart' as http;
 
   class ProductsProvider with ChangeNotifier {
     List<Product> _item = PRODUCT_DATA;
@@ -22,8 +25,34 @@ import 'package:shop_app/providers/productModel.dart';
       return _item.firstWhere((element) => element.id == id);
     }
 
-    addProduct() {
-      // _item.add(value);
+    addProduct(Product product) {
+      const url = "https://flutter-shop-app-cc467-default-rtdb.asia-southeast1.firebasedatabase.app/products.json";
+      http.post(Uri.parse(url), body: json.encode({
+        "title": product.title,
+        "description": product.description,
+        "imageUrl": product.imageUrl,
+        "price": product.price,
+        "isFavourite":  product.isFavourite
+      }));
+
+      final newProduct = Product(DateTime.now().toString(), product.title, product.description, product.price, product.imageUrl);
+      _item.add(newProduct);
+      // _item.insert(0, newProduct)
+      notifyListeners();
+    }
+
+    updateProduct(Product newProduct) {
+      final productIndex = _item.indexWhere((element) => newProduct.id == element.id);
+      if (productIndex >= 0) {
+        _item[productIndex] = newProduct;
+        notifyListeners();
+      } else {
+        _item.add(newProduct);
+      }
+    }
+
+    deleteProduct(String id) {
+      _item.removeWhere((element) => element.id == id);
       notifyListeners();
     }
 

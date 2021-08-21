@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shop_app/providers/productModel.dart';
+import 'package:shop_app/providers/products_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = "/edit_product_screen";
@@ -16,11 +18,25 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController();
   final _form = GlobalKey<FormState>();
   var _edittedProduct = Product("", "", "", 0, "");
+  var _isInit = true;
 
   @override
   void initState() {
     _imageUrlFocusNote.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context)!.settings.arguments;
+      if (productId != null) {
+        _edittedProduct = Provider.of<ProductsProvider>(context, listen: false).findProductById(productId  as String);
+        _imageUrlController.text = _edittedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   void _updateImageUrl() {
@@ -34,9 +50,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _saveForm() {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
-
+      return;
     } else {
       _form.currentState!.save();
+      if (_edittedProduct.id == null) {
+        Provider.of<ProductsProvider>(context, listen: false).addProduct(_edittedProduct);
+
+      } else {
+        Provider.of<ProductsProvider>(context, listen: false).updateProduct(_edittedProduct);
+      }
+
+      Navigator.of(context).pop();
+
     }
     print(_edittedProduct.title);
     print(_edittedProduct.description);
@@ -69,28 +94,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _edittedProduct.title,
                   decoration: InputDecoration(labelText: "Title"),
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
                   },
                   onSaved: (value) {
-                    _edittedProduct = Product(_edittedProduct.id, value.toString(), _edittedProduct.description, _edittedProduct.price, _edittedProduct.imageUrl);
+                    _edittedProduct = Product.otherProduct(_edittedProduct.id, value.toString(), _edittedProduct.description, _edittedProduct.price, _edittedProduct.imageUrl, _edittedProduct.isFavourite);
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Please provide a value";
+                      return "Please provide a title";
                     }
                     return null;
                   },
                 ),
                 TextFormField(
+                  initialValue: _edittedProduct.price.toString(),
                   decoration: InputDecoration(labelText: "Price"),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   focusNode: _priceFocusNode,
                   onSaved: (value) {
-                    _edittedProduct = Product(_edittedProduct.id, _edittedProduct.title, _edittedProduct.description, double.parse(value.toString()), _edittedProduct.imageUrl);
+                    _edittedProduct = Product.otherProduct(_edittedProduct.id, _edittedProduct.title, _edittedProduct.description, double.parse(value.toString()), _edittedProduct.imageUrl, _edittedProduct.isFavourite);
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -102,14 +129,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _edittedProduct.description,
                   decoration: InputDecoration(labelText: "Description"),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                    FocusScope.of(context).requestFocus(_imageUrlFocusNote);
                   },
                   onSaved: (value) {
-                    _edittedProduct = Product(_edittedProduct.id, _edittedProduct.title, value.toString(), _edittedProduct.price, _edittedProduct.imageUrl);
+                    _edittedProduct = Product.otherProduct(_edittedProduct.id, _edittedProduct.title, value.toString(), _edittedProduct.price, _edittedProduct.imageUrl, _edittedProduct.isFavourite);
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -145,8 +173,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         onFieldSubmitted: (_) {
                           _saveForm();
                         },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please enter an image URL";
+                          }
+                          if (!value.startsWith("http") && !value.startsWith("https")) {
+                            return "Please enter a valid URL";
+                          }
+                          return null;
+                        },
                         onSaved: (value) {
-                          _edittedProduct = Product(_edittedProduct.id, _edittedProduct.title, _edittedProduct.description, _edittedProduct.price, value.toString());
+                          _edittedProduct = Product.otherProduct(_edittedProduct.id, _edittedProduct.title, _edittedProduct.description, _edittedProduct.price, value.toString(), _edittedProduct.isFavourite);
                         },
                       ),
                     ),
